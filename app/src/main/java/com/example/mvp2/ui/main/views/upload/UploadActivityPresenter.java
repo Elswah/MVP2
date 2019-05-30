@@ -20,9 +20,11 @@ public class UploadActivityPresenter implements UploadInterface.Presenter, Uploa
 
     @Override
     public void uploadBtnClicked(String status, String filePath) {
+        // this interface call method upload without know about logic about it
         model = new ModelImpl(this);
         if (view != null) {
             if (filePath.length() > 0) {
+                Log.d("filepath", "" + filePath.trim());
                 view.setStatus(status);
                 model.uploadImage(status, filePath, this);
                 Log.d("ss", "ssssss");
@@ -56,6 +58,13 @@ public class UploadActivityPresenter implements UploadInterface.Presenter, Uploa
     public void onFailure(Call<PojoResponse> call, Throwable t) {
         if (view != null) {
             view.errorUploading(call, t);
+        }
+    }
+
+    @Override
+    public void onCancel() {
+        if (view != null) {
+
         }
     }
 

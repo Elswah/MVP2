@@ -31,33 +31,24 @@ public class ModelImpl implements UploadInterface.Interactor, ProgressRequestBod
 
     @Override
     public void uploadImage(String status, String filePath, OnFinishedListener onFinishedListener) {
-        // call servce to start upload throw service
-
-        /*Intent mIntent = new Intent(context, FileUploadService.class);
-        mIntent.putExtra("mFilePath", filePath);
-        FileUploadService.enqueueWork(context, mIntent);*/
-
-        // starting http service upload
-
         if (!filePath.isEmpty()) {
 
             File file = new File(filePath.trim());
-            ProgressRequestBody fileBody = new ProgressRequestBody(file, "image", this);
-            MultipartBody.Part filePart = MultipartBody.Part.createFormData("fileUpload", file.getName(), fileBody);
+            ProgressRequestBody fileBody = new ProgressRequestBody(file,
+                    "image", this);
+            MultipartBody.Part filePart =
+                    MultipartBody.Part.createFormData("fileUpload", file.getName(), fileBody);
 
             RestApiService apiService = RetrofitInstance.getApiService();
 
             Call<PojoResponse> callUpload = apiService.onFileUpload2(filePart);
             if (status.equals("upload")) {
                 callUpload.enqueue(new Callback<PojoResponse>() {
-
                     @Override
                     public void onResponse(Call<PojoResponse> call, Response<PojoResponse> response) {
                         Log.d("ResponseData", "" + response.body().getUrl());
                         onFinishedListener.onFinished(response.body());
-
                     }
-
                     @Override
                     public void onFailure(Call<PojoResponse> call, Throwable t) {
                         if (call != null && !call.isCanceled()) {
@@ -69,16 +60,15 @@ public class ModelImpl implements UploadInterface.Interactor, ProgressRequestBod
                             // Call is CANCELLED. IGNORE THIS SINCE IT WAS CANCELLED.
                             onFinishedListener.onFailure(call, t);
                         }
-
-                        //onFinishedListener.onFailure(call, t);
-
-
                     }
                 });
             } else {
                 if (callUpload != null && callUpload.isExecuted()) {
+                    callUpload.cancel();
+                    // this will go to presenter
+                    onFinishedListener.onCancel();
                 }
-                callUpload.cancel();
+
             }
         }
 

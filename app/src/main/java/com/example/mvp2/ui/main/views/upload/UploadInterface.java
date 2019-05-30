@@ -5,6 +5,8 @@ import com.example.mvp2.ui.main.model.PojoResponse;
 import retrofit2.Call;
 
 public interface UploadInterface {
+
+
     interface View {
         void setStatus(String status);
 
@@ -37,6 +39,8 @@ public interface UploadInterface {
             void onFinished(PojoResponse obj);
 
             void onFailure(Call<PojoResponse> call, Throwable t);
+
+            void onCancel();
 
         }
 
